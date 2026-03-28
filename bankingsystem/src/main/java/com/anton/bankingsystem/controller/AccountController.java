@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.anton.bankingsystem.dto.TransferRequest;
 import com.anton.bankingsystem.entity.Account;
 import com.anton.bankingsystem.service.AccountService;
 
@@ -26,5 +27,16 @@ public class AccountController {
     } catch (IllegalArgumentException e) {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
     }
+  }
+
+  @PostMapping("/transfer")
+  public ResponseEntity<?> transferMoney(@RequestBody TransferRequest request) {
+    try {
+      accountService.transferMoney(request.getFromAccountId(), request.getToAccountId(), request.getAmount());
+      return new ResponseEntity<>(HttpStatus.ACCEPTED);
+    } catch (IllegalArgumentException e) {
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
   }
 }
