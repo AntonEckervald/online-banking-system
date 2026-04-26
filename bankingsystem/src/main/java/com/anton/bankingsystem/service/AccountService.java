@@ -10,6 +10,7 @@ import com.anton.bankingsystem.repository.AccountRepository;
 import com.anton.bankingsystem.repository.UserRepository;
 import com.anton.bankingsystem.entity.Account;
 import com.anton.bankingsystem.entity.User;
+import com.anton.bankingsystem.entity.Transaction;
 
 import jakarta.transaction.Transactional;
 
@@ -20,6 +21,9 @@ public class AccountService {
 
   @Autowired
   private UserRepository userRepository;
+
+  @Autowired
+  private TransactionService transactionService;
 
   @Transactional
   public Account createAccount(Account account, Long userId) {
@@ -57,5 +61,12 @@ public class AccountService {
 
     accountRepository.save(fromAccount);
     accountRepository.save(toAccount);
+
+    Transaction transaction = new Transaction();
+    transaction.setFromAccount(fromAccount);
+    transaction.setToAccount(toAccount);
+    transaction.setAmount(amount);
+
+    transactionService.createTransaction(transaction);
   }
 }

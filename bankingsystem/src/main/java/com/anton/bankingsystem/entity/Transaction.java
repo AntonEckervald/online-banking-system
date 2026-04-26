@@ -1,7 +1,7 @@
 package com.anton.bankingsystem.entity;
 
 import java.math.BigDecimal;
-import java.util.Set;
+import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -12,32 +12,36 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
-import lombok.Setter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "t_account")
+@Table(name = "t_transaction")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Account {
+public class Transaction {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
-
-  @Column(name = "account_number", nullable = false)
-  private String accountNumber;
-
-  @Column(name = "balance", nullable = false)
-  private BigDecimal balance;
+  private long id;
 
   @ManyToOne
-  @JoinColumn(name = "user_id", nullable = false)
-  @JsonIgnore // Breaks potential infinite loops.
-  private User user;
+  @JoinColumn(name = "from_account_id", nullable = false)
+  @JsonIgnore
+  private Account fromAccount;
+
+  @ManyToOne
+  @JoinColumn(name = "to_account_id", nullable = false)
+  @JsonIgnore
+  private Account toAccount;
+
+  @Column(name = "amount")
+  private BigDecimal amount;
+
+  @Column(name = "time")
+  private Timestamp time;
 }
