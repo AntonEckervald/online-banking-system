@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class TransferRequest {
+public class TransferRequestDto {
   private Long fromAccountId;
   private Long toAccountId;
   private BigDecimal amount;

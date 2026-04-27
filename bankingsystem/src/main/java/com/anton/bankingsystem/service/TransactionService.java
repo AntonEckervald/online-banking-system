@@ -1,7 +1,7 @@
 package com.anton.bankingsystem.service;
 
 import java.util.Optional;
-
+import java.util.List;
 import java.sql.Timestamp;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,10 @@ import com.anton.bankingsystem.repository.TransactionRepository;
 import com.anton.bankingsystem.repository.AccountRepository;
 
 import com.anton.bankingsystem.entity.Transaction;
+import com.anton.bankingsystem.dto.TransactionResponseDto;
 import com.anton.bankingsystem.entity.Account;
+
+import com.anton.bankingsystem.util.TransactionMapper;
 
 import jakarta.transaction.Transactional;
 
@@ -42,6 +45,24 @@ public class TransactionService {
     transaction.setTime(timestamp);
 
     return transactionRepository.save(transaction);
+  }
+
+  @Transactional
+  public List<TransactionResponseDto> getAccountIncomes(Long accountId) {
+    Optional<Account> optionalAccount = accountRepository.findById(accountId);
+    Account account = optionalAccount.orElseThrow();
+    List<Transaction> accountIncomes = transactionRepository.findByToAccount(account);
+
+    return accountIncomes.stream().map(transaction -> TransactionMapper.toDto(transaction, true)).toList();
+  }
+
+  @Transactional
+  public List<TransactionResponseDto> getAccountExpenses(Long accountId) {
+    Optional<Account> optionalAccount = accountRepository.findById(accountId);
+    Account account = optionalAccount.orElseThrow();
+    List<Transaction> accountExpenses = transactionRepository.findByFromAccount(account);
+
+    return accountExpenses.stream().map(transaction -> TransactionMapper.toDto(transaction, false)).toList();
   }
 
 }
