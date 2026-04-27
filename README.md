@@ -8,10 +8,10 @@ A modern, Spring Boot-powered online banking application that allows users to ma
 
 - **User Management**: Register, retrieve, and manage banking customers.
 - **Account Management**: Support for multiple bank accounts per user.
-- **Financial Transactions**: Securely transfer funds between accounts.
+- **Financial Transactions**: Securely transfer funds between accounts with transaction history.
 - **Automated Validation**: Integrated email validation for user registrations.
 - **Database Integration**: Robust data persistence using MySQL and Spring Data JPA.
-- **Environment Configuration**: Easy setup with `.env` file support.
+- **Environment Configuration**: Easy setup with `.env` file support using `springboot4-dotenv`.
 
 ## 🛠️ Tech Stack
 
@@ -45,10 +45,10 @@ docker-compose up -d
 Copy the `.env.example` file to `.env` and configure your database credentials:
 
 ```bash
-cp .env.example .env
+cp bankingsystem/.env.example bankingsystem/.env
 ```
 
-Edit the `.env` file:
+Edit the `bankingsystem/.env` file:
 
 ```env
 DB_USERNAME=your_username
@@ -58,13 +58,14 @@ DB_PASSWORD=your_password
 ### 3. Build the Project
 
 ```bash
-mvn clean install
+cd bankingsystem
+./mvnw clean install
 ```
 
 ### 4. Run the Application
 
 ```bash
-mvn spring-boot:run
+./mvnw spring-boot:run
 ```
 
 The server will start on `http://localhost:8080`.
@@ -82,10 +83,12 @@ The server will start on `http://localhost:8080`.
 
 ### Account & Transaction Endpoints
 
-| Method | Endpoint                                | Description                     |
-| ------ | --------------------------------------- | ------------------------------- |
-| POST   | `/api/users/{userId}/accounts`          | Create a new account for a user |
-| POST   | `/api/users/{userId}/accounts/transfer` | Transfer money between accounts |
+| Method | Endpoint                                            | Description                              |
+| ------ | --------------------------------------------------- | ---------------------------------------- |
+| POST   | `/api/users/{userId}/accounts`                      | Create a new account for a user          |
+| POST   | `/api/users/{userId}/accounts/transfer`             | Transfer money between accounts          |
+| GET    | `/api/users/{userId}/accounts/{accountId}/incomes`  | Get incoming transactions for an account |
+| GET    | `/api/users/{userId}/accounts/{accountId}/expenses` | Get outgoing transactions for an account |
 
 #### Sample Transfer Request Body
 
@@ -97,19 +100,32 @@ The server will start on `http://localhost:8080`.
 }
 ```
 
+#### Sample Transaction Response
+
+```json
+[
+  {
+    "relatedAccountId": 2,
+    "time": "2026-04-27T10:00:00.000+00:00",
+    "amount": 100.0
+  }
+]
+```
+
 ## 📁 Project Structure
 
 ```text
 bankingsystem/
 ├── src/main/java/com/anton/bankingsystem/
-│   ├── controller/   # REST Controllers
-│   ├── service/      # Business Logic
-│   ├── entity/       # JPA Entities (User, Account)
-│   ├── dto/          # Data Transfer Objects
+│   ├── controller/   # REST Controllers (User, Account)
+│   ├── service/      # Business Logic (User, Account, Transaction)
+│   ├── entity/       # JPA Entities (User, Account, Transaction)
+│   ├── dto/          # Data Transfer Objects (TransferRequest, TransactionResponse)
 │   ├── repository/   # Spring Data JPA Repositories
-│   └── util/         # Utility classes (EmailValidator)
+│   └── util/         # Utility classes (EmailValidator, TransactionMapper)
 ├── src/main/resources/
-│   └── application.properties  # App configuration
+│   ├── application.properties  # App configuration
+│   └── static/                 # Static assets
 ├── docker-compose.yml          # Infrastructure setup
 └── pom.xml                     # Maven dependencies
 ```
